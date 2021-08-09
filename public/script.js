@@ -1,4 +1,7 @@
-// create a short-lived developer token for the purpose of getting a longer-lived user token
+// Create a short-lived developer token for the purpose of getting a longer-lived user token
+// This is just a dummy developer token with a short expiration time because MusicKit requires you to authenticate on the client and there's no way to not expose your developer token
+// I make the actual Apple Music API requests with my own developer token, which is stored on the server
+
 fetch('/generate-music-token')
 .then(r => r.json())
 .then(data => {
