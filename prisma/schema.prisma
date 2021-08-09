@@ -1,0 +1,18 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  slackID    String @unique
+  slackToken String
+  appleMusicToken String
+  currentSong String
+  playing Boolean @default(false)
+  enabled Boolean @default(true)
+}
