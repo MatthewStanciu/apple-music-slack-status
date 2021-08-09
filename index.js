@@ -180,43 +180,37 @@ const fetchLatestSong = (slackID) => (
   })
 )
 
-const getCurrentSong = (slackID) => (
-  new Promise((resolve, reject) => {
-    prisma.user.findUnique({
-      where: { slackID }
-    }).then(user => resolve(user.currentSong))
+const getCurrentSong = async (slackID) => {
+  const user = await prisma.user.findUnique({
+    where: { slackID }
   })
-)
+  return user.currentSong
+}
 
-const setCurrentSong = (song, slackID) => (
-  new Promise((resolve, reject) => {
-    prisma.user.update({
-      where: { slackID },
-      data: {
-        currentSong: song
-      },
-    }).then(() => resolve())
+const setCurrentSong = async (song, slackID) => {
+  await prisma.user.update({
+    where: { slackID },
+    data: {
+      currentSong: song
+    }
   })
-)
+}
 
-const getPlayStatus = (slackID) => (
-  new Promise((resolve, reject) => {
-    prisma.user.findUnique({
-      where: { slackID }
-    }).then(user => resolve(user.playing))
+const getPlayStatus = async (slackID) => {
+  const user = await prisma.user.findUnique({
+    where: { slackID }
   })
-)
+  return user.playing
+}
 
-const setPlayStatus = (status, slackID) => (
-  new Promise((resolve, reject) => {
-    prisma.user.update({
-      where: { slackID },
-      data: {
-        playing: status
-      }
-    }).then(() => resolve())
+const setPlayStatus = async (status, slackID) => {
+  await prisma.user.update({
+    where: { slackID },
+    data: {
+      playing: status
+    }
   })
-)
+}
 
 const getSlackToken = async (slackID) => {
   const user = await prisma.user.findUnique({
