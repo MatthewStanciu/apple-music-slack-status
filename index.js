@@ -92,7 +92,7 @@ app.post('/register-new-user', async (req, res) => {
         appleMusicToken: musicToken,
         currentSong: '',
         playing: false,
-        enabled: false
+        enabled: true
       }
     }).then(async () => {
       const users = await prisma.user.findMany()
