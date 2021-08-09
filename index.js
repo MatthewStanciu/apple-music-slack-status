@@ -66,7 +66,7 @@ app.get('/generate-music-token', (req, res) => {
 
   const token = jwt.sign({}, privateKey, {
     algorithm: 'ES256',
-    expiresIn: '60s',
+    expiresIn: '20s',
     issuer: teamId,
     header: {
       alg: 'ES256',
