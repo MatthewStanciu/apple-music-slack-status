@@ -25,7 +25,7 @@ fetch('/generate-music-token')
           musicToken: musicUserToken
         })
       }).then(() => {
-        console.log(`Authorized! Music user token: ${musicUserToken}; slack token: ${slackToken}; user id: ${userId}`)
+        console.log(`Authorized! 😎`)
         window.location.href = '/auth-success.html'
       })
     })
