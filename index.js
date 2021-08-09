@@ -36,7 +36,7 @@ app.get('/slack-auth', (req, res) => {
 })
 
 app.post('/slack/commands', async (req, res) => {
-  // This is a bad idea because I don't verify that the request is coming from Slack, so somebody can spoof the command and toggle the bot on/off for other people. But this app doesn't do anything important, so I've decided to simply not deal with it. :cooll-thumbs:
+  // This is a bad idea because I don't verify that the request is coming from Slack, so somebody can spoof the command and toggle the bot on/off for other people. But this app doesn't do anything important, so I've decided to simply not deal with it. :cooll-thumbs: :)
   const { user_id, response_url } = req.body
   const appUser = await prisma.user.findUnique({
     where: { slackID: user_id }
