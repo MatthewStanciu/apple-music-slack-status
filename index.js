@@ -106,7 +106,7 @@ app.post('/register-new-user', async (req, res) => {
 })
 
 const updateStatus = async (user) => {
-  console.log('updating status')
+  console.log('updating status for', user)
   const playStatus = await getPlayStatus(user)
   const latest = await fetchLatestSong(user)
   let currentSong = await getCurrentSong(user)
@@ -173,7 +173,7 @@ const fetchLatestSong = (slackID) => (
         resolve(data.data[0].attributes)
       })
       .catch(err => {
-        console.error('could not fetch latest song', err)
+        console.error(`could not fetch latest song for ${slackID}`, err)
         reject(err)
       })
     })
@@ -220,8 +220,8 @@ const getSlackToken = async (slackID) => {
 }
 
 const updateStatuses = async () => {
-  const users = await prisma.user.findMany()
-  console.log(users)
+  const users = await prisma.user.findMany().catch(err => console.log('error connecting', err))
+  // console.log(users)
   for (let user of users) {
     if (user.enabled) {
       updateStatus(user.slackID)
