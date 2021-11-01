@@ -9,4 +9,6 @@ RUN yarn
 
 COPY . .
 
+RUN prisma generate
+
 CMD [ "node", "index.js" ]
