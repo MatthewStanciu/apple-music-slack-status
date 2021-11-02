@@ -8,10 +8,6 @@ COPY . .
 
 RUN yarn
 
-RUN pwd
-
-RUN ls
-
 RUN npx prisma generate
 
 CMD [ "node", "index.js" ]
