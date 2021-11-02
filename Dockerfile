@@ -7,6 +7,8 @@ COPY ["package.json", "package-lock.json*", "./"]
 
 RUN yarn
 
+RUN npx prisma generate
+
 COPY . .
 
 CMD [ "node", "index.js" ]
