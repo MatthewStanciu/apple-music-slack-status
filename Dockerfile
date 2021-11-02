@@ -10,6 +10,8 @@ RUN yarn
 
 RUN pwd
 
+RUN ls
+
 RUN npx prisma generate
 
 COPY . .
