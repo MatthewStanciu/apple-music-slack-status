@@ -19,6 +19,7 @@
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "node-fetch": "^3.1.0",
+    "toad-scheduler": "^1.6.0",
     "typescript": "^4.5.2"
   },
   "devDependencies": {

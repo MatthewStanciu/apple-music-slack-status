@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 import fetch from 'node-fetch'
 import { WebClient } from '@slack/web-api'
 import { PrismaClient } from '@prisma/client'
+import { ToadScheduler, SimpleIntervalJob, AsyncTask } from 'toad-scheduler'
 
 const app = express()
 const prisma = new PrismaClient()
@@ -185,7 +186,7 @@ const fetchLatestSong = (slackID: string): Promise<AppleMusicSong | string> =>
             .then((data: LatestSongResponse) => {
               resolve(data.data[0].attributes)
             })
-            .catch((err: string) => {
+            .catch((err: Error) => {
               console.error(`could not fetch latest song for ${slackID}`, err)
               reject(err)
             })
@@ -249,8 +250,15 @@ const updateStatuses = async () => {
   }
 }
 
-setInterval(() => {
-  updateStatuses()
-}, 5000)
+const scheduler = new ToadScheduler()
+const updateStatusesTask = new AsyncTask(
+  'update statuses',
+  updateStatuses,
+  (err: Error) => {
+    console.error(`Error in task: ${err}`)
+  },
+)
+const job = new SimpleIntervalJob({ seconds: 5 }, updateStatusesTask)
+scheduler.addSimpleIntervalJob(job)
 
 app.listen(process.env.PORT || 3000)
