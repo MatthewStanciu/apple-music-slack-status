@@ -1,5 +1,4 @@
-FROM node:12.18.1
-
+FROM node:16.13.10
 ENV NODE_ENV=production
 
 WORKDIR /usr/src/app/apple-music-slack-status
