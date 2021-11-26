@@ -32,8 +32,8 @@ app.get('/slack-auth', (req, res) => {
       grant_type: 'authorization_code',
     })
     .then((r) => {
-      const userId = r?.authed_user?.id
-      const authToken = r?.authed_user?.access_token
+      const userId = r.authed_user?.id
+      const authToken = r.authed_user?.access_token
       res.redirect(`/music?slack_token=${authToken}&userId=${userId}`)
     })
 })
