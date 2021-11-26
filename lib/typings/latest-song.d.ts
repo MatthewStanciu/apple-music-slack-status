@@ -7,7 +7,7 @@ interface Data {
   id: string
   type: string
   href: string
-  attributes: Attributes
+  attributes: AppleMusicSong
 }
 
 interface AppleMusicSong {
