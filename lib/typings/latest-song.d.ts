@@ -10,7 +10,7 @@ interface Data {
   attributes: Attributes
 }
 
-interface Attributes {
+interface AppleMusicSong {
   artistName: string
   name: string
   durationInMillis: number

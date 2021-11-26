@@ -116,7 +116,7 @@ app.post('/register-new-user', async (req, res) => {
 const updateStatus = async (user: string) => {
   console.log('updating status for', user)
   const playStatus = await getPlayStatus(user)
-  const latest = (await fetchLatestSong(user)) as Attributes
+  const latest = (await fetchLatestSong(user)) as AppleMusicSong
   let currentSong = await getCurrentSong(user)
   let latestSong = `${latest.artistName} - ${latest.name}`
   console.log(latestSong, currentSong, playStatus)
@@ -135,7 +135,7 @@ const updateStatus = async (user: string) => {
       // You can't get the currently playing song for a user with the Apple Music API 🤦 This is a hacky workaround.
       // Set a timeout that lasts the duration of the currently-playing song. If the song has ended and the most recently-played song is still the same, assume the user is no longer playing music.
       // This breaks if the user is playing a song on repeat, or paused it for a while and comes back later, but I think it's the best I can do given the limitations of the Apple Music API.
-      const newLatest = (await fetchLatestSong(user)) as Attributes
+      const newLatest = (await fetchLatestSong(user)) as AppleMusicSong
       const newLatestSong = `${newLatest.artistName} - ${newLatest.name}`
       console.log(latestSong, newLatestSong)
       if (newLatestSong === latestSong) {
@@ -163,7 +163,7 @@ const updateStatus = async (user: string) => {
   })
 }
 
-const fetchLatestSong = (slackID: string): Promise<Attributes | string> =>
+const fetchLatestSong = (slackID: string): Promise<AppleMusicSong | string> =>
   new Promise((resolve, reject) => {
     prisma.user
       .findUnique({
