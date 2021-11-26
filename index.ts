@@ -238,7 +238,7 @@ const getSlackToken = async (slackID: string): Promise<string> => {
 const updateStatuses = async () => {
   const users = (await prisma.user
     .findMany()
-    .catch((err) => console.log('error connecting', err))) as Array<User>
+    .catch((err) => console.log('error connecting', err))) as User[]
   // console.log(users)
   for (let user of users) {
     if (user.enabled) {
