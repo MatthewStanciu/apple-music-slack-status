@@ -72,13 +72,15 @@ app.post('/slack/commands', async (req, res) => {
 })
 
 app.get('/generate-music-token', (req, res) => {
-  const privateKey = process.env.APPLE_MUSIC_PRIVATE_KEY
+  const privateKey = `-----BEGIN PRIVATE KEY-----\n${process.env.APPLE_MUSIC_PRIVATE_KEY}\n-----END PRIVATE KEY-----\n`
   const teamId = process.env.TEAM_ID
   const keyId = process.env.KEY_ID
 
+  console.log(privateKey)
+
   const token = jwt.sign(
     {},
-    `-----BEGIN PRIVATE KEY-----\n${privateKey}\n-----END PRIVATE KEY-----\n`,
+    privateKey,
     {
       algorithm: 'ES256',
       expiresIn: '20s',
