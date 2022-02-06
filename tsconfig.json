@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2017",
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -12,6 +12,9 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true
+  },
+  "ts-node": {
+    "files": true
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules"]

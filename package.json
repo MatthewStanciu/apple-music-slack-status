@@ -2,12 +2,14 @@
   "name": "apple-music-slack-status",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "engines": {
     "node": ">=16.0.0"
   },
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsnode": "node --loader ts-node/esm --no-warnings index.ts"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +25,7 @@
     "jsonwebtoken": "^8.5.1",
     "node-fetch": "^3.1.0",
     "toad-scheduler": "^1.6.0",
+    "ts-node": "^10.4.0",
     "typescript": "^4.5.2"
   },
   "devDependencies": {

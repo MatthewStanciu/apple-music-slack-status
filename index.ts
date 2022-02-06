@@ -3,7 +3,8 @@ import bodyParser from 'body-parser'
 import jwt from 'jsonwebtoken'
 import fetch from 'node-fetch'
 import { WebClient } from '@slack/web-api'
-import { PrismaClient } from '@prisma/client'
+import pkg from '@prisma/client'
+const { PrismaClient } = pkg
 import { ToadScheduler, SimpleIntervalJob, AsyncTask } from 'toad-scheduler'
 
 const app = express()
