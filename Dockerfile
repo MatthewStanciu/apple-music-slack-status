@@ -11,4 +11,4 @@ RUN npx prisma generate
 
 COPY . .
 
-CMD [ "node", "index.js" ]
+CMD [ "yan", "run", "tsnode" ]
