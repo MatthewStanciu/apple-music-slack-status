@@ -1,13 +1,14 @@
-const express = require('express')
-const app = express()
-const bodyParser = require('body-parser')
-const jwt = require('jsonwebtoken')
-const fetch = require('node-fetch')
-const { WebClient } = require('@slack/web-api')
-const slack = new WebClient(process.env.SLACK_USER_TOKEN)
-const { PrismaClient } = require('@prisma/client')
+import express from 'express'
+import bodyParser from 'body-parser'
+import jwt from 'jsonwebtoken'
+import fetch from 'node-fetch'
+import { WebClient } from '@slack/web-api'
+import { PrismaClient } from '@prisma/client'
+import { ToadScheduler, SimpleIntervalJob, AsyncTask } from 'toad-scheduler'
 
+const app = express()
 const prisma = new PrismaClient()
+const slack = new WebClient(process.env.SLACK_USER_TOKEN)
 
 app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -25,14 +26,14 @@ app.get('/slack-auth', (req, res) => {
   const code = req.query.code
   slack.oauth.v2
     .access({
-      client_id: process.env.CLIENT_ID,
-      client_secret: process.env.CLIENT_SECRET,
-      code,
+      client_id: `${process.env.CLIENT_ID}`,
+      client_secret: `${process.env.CLIENT_SECRET}`,
+      code: `${code}`,
       grant_type: 'authorization_code',
     })
     .then((r) => {
-      const userId = r.authed_user.id
-      const authToken = r.authed_user.access_token
+      const userId = r.authed_user?.id
+      const authToken = r.authed_user?.access_token
       res.redirect(`/music?slack_token=${authToken}&userId=${userId}`)
     })
 })
@@ -46,7 +47,7 @@ app.post('/slack/commands', async (req, res) => {
   await prisma.user.update({
     where: { slackID: user_id },
     data: {
-      enabled: !appUser.enabled,
+      enabled: !appUser?.enabled,
     },
   })
   fetch(response_url, {
@@ -55,7 +56,7 @@ app.post('/slack/commands', async (req, res) => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      text: appUser.enabled
+      text: appUser?.enabled
         ? `Toggled off! I won't update your status until you toggle me back on.`
         : `Toggled on! I will continuously update your status until you toggle me off.`,
       response_type: 'ephemeral',
@@ -68,9 +69,9 @@ app.get('/generate-music-token', (req, res) => {
   const teamId = process.env.TEAM_ID
   const keyId = process.env.KEY_ID
 
-  const token = jwt.sign({}, privateKey, {
+  const token = jwt.sign({}, privateKey as string, {
     algorithm: 'ES256',
-    expiresIn: '20sdays',
+    expiresIn: '20s',
     issuer: teamId,
     header: {
       alg: 'ES256',
@@ -113,10 +114,10 @@ app.post('/register-new-user', async (req, res) => {
   }
 })
 
-const updateStatus = async (user) => {
+const updateStatus = async (user: string) => {
   console.log('updating status for', user)
   const playStatus = await getPlayStatus(user)
-  const latest = await fetchLatestSong(user)
+  const latest = (await fetchLatestSong(user)) as AppleMusicSong
   let currentSong = await getCurrentSong(user)
   let latestSong = `${latest.artistName} - ${latest.name}`
   console.log(latestSong, currentSong, playStatus)
@@ -135,7 +136,7 @@ const updateStatus = async (user) => {
       // You can't get the currently playing song for a user with the Apple Music API 🤦 This is a hacky workaround.
       // Set a timeout that lasts the duration of the currently-playing song. If the song has ended and the most recently-played song is still the same, assume the user is no longer playing music.
       // This breaks if the user is playing a song on repeat, or paused it for a while and comes back later, but I think it's the best I can do given the limitations of the Apple Music API.
-      const newLatest = await fetchLatestSong(user)
+      const newLatest = (await fetchLatestSong(user)) as AppleMusicSong
       const newLatestSong = `${newLatest.artistName} - ${newLatest.name}`
       console.log(latestSong, newLatestSong)
       if (newLatestSong === latestSong) {
@@ -163,40 +164,45 @@ const updateStatus = async (user) => {
   })
 }
 
-const fetchLatestSong = (slackID) =>
+const fetchLatestSong = (slackID: string): Promise<AppleMusicSong | string> =>
   new Promise((resolve, reject) => {
     prisma.user
       .findUnique({
         where: { slackID },
       })
       .then((user) => {
-        const musicUserToken = user.appleMusicToken
-        fetch('https://api.music.apple.com/v1/me/recent/played/tracks', {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${process.env.DEVELOPER_TOKEN}`,
-            'Music-User-Token': musicUserToken,
-          },
-        })
-          .then((r) => r.json())
-          .then((data) => {
-            resolve(data.data[0].attributes)
+        if (user === null)
+          reject(`Could not fetch latest song for ${slackID}: user is null`)
+        else {
+          const musicUserToken = user.appleMusicToken
+          fetch('https://api.music.apple.com/v1/me/recent/played/tracks', {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${process.env.DEVELOPER_TOKEN}`,
+              'Music-User-Token': musicUserToken,
+            },
           })
-          .catch((err) => {
-            console.error(`could not fetch latest song for ${slackID}`, err)
-            reject(err)
-          })
+            .then((r: any) => r.json())
+            .then((data: LatestSongResponse) => {
+              resolve(data.data[0].attributes)
+            })
+            .catch((err: Error) => {
+              console.error(`could not fetch latest song for ${slackID}`, err)
+              reject(err)
+            })
+        }
       })
   })
 
-const getCurrentSong = async (slackID) => {
+const getCurrentSong = async (slackID: string): Promise<string> => {
   const user = await prisma.user.findUnique({
     where: { slackID },
   })
-  return user.currentSong
+  if (user !== null) return user.currentSong
+  else return ''
 }
 
-const setCurrentSong = async (song, slackID) => {
+const setCurrentSong = async (song: string, slackID: string) => {
   await prisma.user.update({
     where: { slackID },
     data: {
@@ -205,14 +211,15 @@ const setCurrentSong = async (song, slackID) => {
   })
 }
 
-const getPlayStatus = async (slackID) => {
+const getPlayStatus = async (slackID: string): Promise<boolean> => {
   const user = await prisma.user.findUnique({
     where: { slackID },
   })
-  return user.playing
+  if (user !== null) return user.playing
+  else return false
 }
 
-const setPlayStatus = async (status, slackID) => {
+const setPlayStatus = async (status: boolean, slackID: string) => {
   await prisma.user.update({
     where: { slackID },
     data: {
@@ -221,17 +228,18 @@ const setPlayStatus = async (status, slackID) => {
   })
 }
 
-const getSlackToken = async (slackID) => {
+const getSlackToken = async (slackID: string): Promise<string> => {
   const user = await prisma.user.findUnique({
     where: { slackID },
   })
-  return user.slackToken
+  if (user !== null) return user.slackToken
+  else return ''
 }
 
 const updateStatuses = async () => {
-  const users = await prisma.user
+  const users = (await prisma.user
     .findMany()
-    .catch((err) => console.log('error connecting', err))
+    .catch((err) => console.log('error connecting', err))) as User[]
   // console.log(users)
   for (let user of users) {
     if (user.enabled) {
@@ -242,8 +250,15 @@ const updateStatuses = async () => {
   }
 }
 
-setInterval(() => {
-  updateStatuses()
-}, 5000)
+const scheduler = new ToadScheduler()
+const updateStatusesTask = new AsyncTask(
+  'update statuses',
+  updateStatuses,
+  (err: Error) => {
+    console.error(`Error in task: ${err}`)
+  },
+)
+const job = new SimpleIntervalJob({ seconds: 5 }, updateStatusesTask)
+scheduler.addSimpleIntervalJob(job)
 
 app.listen(process.env.PORT || 3000)
