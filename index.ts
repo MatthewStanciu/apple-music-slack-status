@@ -2,6 +2,7 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
+import fs from 'fs'
 import jwt from 'jsonwebtoken'
 import fetch from 'node-fetch'
 import { WebClient } from '@slack/web-api'
@@ -72,7 +73,7 @@ app.post('/slack/commands', async (req, res) => {
 })
 
 app.get('/generate-music-token', (req, res) => {
-  const privateKey = `-----BEGIN PRIVATE KEY-----\n${process.env.APPLE_MUSIC_PRIVATE_KEY}\n-----END PRIVATE KEY-----\n`
+  const privateKey = fs.readFileSync('private.key')
   const teamId = process.env.TEAM_ID
   const keyId = process.env.KEY_ID
 
