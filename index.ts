@@ -77,8 +77,6 @@ app.get('/generate-music-token', (req, res) => {
   const teamId = process.env.TEAM_ID
   const keyId = process.env.KEY_ID
 
-  console.log(privateKey)
-
   const token = jwt.sign(
     {},
     privateKey,
