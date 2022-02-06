@@ -73,7 +73,7 @@ app.post('/slack/commands', async (req, res) => {
 })
 
 app.get('/generate-music-token', (req, res) => {
-  const privateKey = fs.readFileSync(path.join(dirname(fileURLToPath(import.meta.url)), 'private.key'))
+  const privateKey = Buffer.from(`${process.env.APPLE_MUSIC_PRIVATE_KEY}`, 'base64').toString('ascii')
   const teamId = process.env.TEAM_ID
   const keyId = process.env.KEY_ID
 
