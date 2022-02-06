@@ -119,7 +119,7 @@ const updateStatus = async (user: string) => {
   const playStatus = await getPlayStatus(user)
   const latest = (await fetchLatestSong(user)) as AppleMusicSong
   let currentSong = await getCurrentSong(user)
-  let latestSong = `${latest.artistName} - ${latest.name}`
+  let latestSong = `${latest.artistName} – ${latest.name}`
   console.log(latestSong, currentSong, playStatus)
 
   if (latestSong === currentSong && !playStatus) {
