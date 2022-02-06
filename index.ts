@@ -1,6 +1,7 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-import path from 'path'
+import path, { dirname } from 'path'
+import { fileURLToPath } from 'url'
 import jwt from 'jsonwebtoken'
 import fetch from 'node-fetch'
 import { WebClient } from '@slack/web-api'
@@ -17,11 +18,11 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 app.get('/', (req, res) => {
-  res.sendFile('/public/index.html')
+  res.sendFile(path.join(dirname(fileURLToPath(import.meta.url)), 'public/index.html'))
 })
 
 app.get('/music', (req, res) => {
-  res.sendFile('/public/music.html')
+  res.sendFile(path.join(dirname(fileURLToPath(import.meta.url)), 'public/music.html'))
 })
 
 app.get('/slack-auth', (req, res) => {
