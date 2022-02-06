@@ -18,11 +18,15 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(dirname(fileURLToPath(import.meta.url)), 'public/index.html'))
+  res.sendFile(
+    path.join(dirname(fileURLToPath(import.meta.url)), 'public/index.html'),
+  )
 })
 
 app.get('/music', (req, res) => {
-  res.sendFile(path.join(dirname(fileURLToPath(import.meta.url)), 'public/music.html'))
+  res.sendFile(
+    path.join(dirname(fileURLToPath(import.meta.url)), 'public/music.html'),
+  )
 })
 
 app.get('/slack-auth', (req, res) => {
@@ -73,15 +77,19 @@ app.get('/generate-music-token', (req, res) => {
   const teamId = process.env.TEAM_ID
   const keyId = process.env.KEY_ID
 
-  const token = jwt.sign({}, privateKey as string, {
-    algorithm: 'ES256',
-    expiresIn: '20s',
-    issuer: teamId,
-    header: {
-      alg: 'ES256',
-      kid: keyId,
+  const token = jwt.sign(
+    {},
+    `-----BEGIN PRIVATE KEY-----\n${process.env.APPLE_MUSIC_PRIVATE_KEY}\n-----END PRIVATE KEY-----\n` as string,
+    {
+      algorithm: 'ES256',
+      expiresIn: '20s',
+      issuer: teamId,
+      header: {
+        alg: 'ES256',
+        kid: keyId,
+      },
     },
-  })
+  )
 
   res.send(JSON.stringify({ token }))
 })
