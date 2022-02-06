@@ -78,7 +78,7 @@ app.get('/generate-music-token', (req, res) => {
 
   const token = jwt.sign(
     {},
-    `-----BEGIN PRIVATE KEY-----\n${process.env.APPLE_MUSIC_PRIVATE_KEY}\n-----END PRIVATE KEY-----\n`,
+    `-----BEGIN PRIVATE KEY-----\n${privateKey}\n-----END PRIVATE KEY-----\n`,
     {
       algorithm: 'ES256',
       expiresIn: '20s',
