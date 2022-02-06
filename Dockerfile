@@ -7,9 +7,7 @@ COPY . .
 
 RUN yarn
 
-RUN npx prisma generate
-
 COPY . .
 
-CMD [ "yan", "run", "tsnode" ]
+CMD [ "yarn", "run", "tsnode" ]
 
