@@ -201,7 +201,7 @@ const fetchLatestSong = (slackID: string): Promise<AppleMusicSong | string> =>
             .catch((err: Error) => {
               console.error(`could not fetch latest song for ${slackID}`, err)
               setPlayStatus(false, slackID)
-              reject(err)
+              resolve({ artistName: '', name: '', durationInMillis: 0 })
             })
         }
       })
