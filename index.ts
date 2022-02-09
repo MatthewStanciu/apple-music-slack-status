@@ -52,6 +52,7 @@ app.post('/slack/commands', async (req, res) => {
   const appUser = await prisma.user.findUnique({
     where: { slackID: user_id },
   })
+  console.log('app user', appUser)
   await prisma.user.update({
     where: { slackID: user_id },
     data: {
