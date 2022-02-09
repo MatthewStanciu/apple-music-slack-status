@@ -144,13 +144,12 @@ const updateStatus = async (user: string) => {
     if (!playStatus) {
       setPlayStatus(true, user)
     }
-    console.log('latest duration', latest.durationInMillis)
     setTimeout(async () => {
       // You can't get the currently playing song for a user with the Apple Music API 🤦 This is a hacky workaround.
       // Set a timeout that lasts the duration of the currently-playing song. If the song has ended and the most recently-played song is still the same, assume the user is no longer playing music.
       // This breaks if the user is playing a song on repeat, or paused it for a while and comes back later, but I think it's the best I can do given the limitations of the Apple Music API.
       const newLatest = (await fetchLatestSong(user)) as AppleMusicSong
-      const newLatestSong = `${newLatest.artistName} — ${newLatest.name}`
+      const newLatestSong = `${newLatest.artistName} – ${newLatest.name}`
       console.log(latestSong, newLatestSong)
       if (newLatestSong === latestSong) {
         console.log('Not playing')
