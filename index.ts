@@ -52,7 +52,6 @@ app.post('/slack/commands', async (req, res) => {
   const appUser = await prisma.user.findUnique({
     where: { slackID: user_id },
   })
-  console.log('app user', appUser)
   await prisma.user.update({
     where: { slackID: user_id },
     data: {
@@ -97,7 +96,7 @@ app.get('/generate-music-token', (req, res) => {
 
 app.post('/register-new-user', async (req, res) => {
   const slackToken = req.body.slackToken
-  const slackID = req.body.slackID
+  const slackID = req.body.slackID.replace('#', '')
   const musicToken = req.body.musicToken
 
   if (
